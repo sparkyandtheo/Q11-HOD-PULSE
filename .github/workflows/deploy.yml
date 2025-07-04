@@ -1,5 +1,5 @@
 # This workflow is triggered on a push to the main branch
-name: Deploy to Firebase
+name: Deploy to Firebase on Push
 'on':
   push:
     branches:
@@ -8,14 +8,27 @@ jobs:
   build_and_deploy:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
-      # This step is crucial. It builds and deploys your project.
-      # By default, this action deploys everything defined in your firebase.json
-      # (which includes both hosting and functions), ensuring the entire
-      # project is updated, not just one part.
-      - uses: FirebaseExtended/action-hosting-deploy@v0
+      # 1. Checkout the repository code
+      - name: Checkout Repository
+        uses: actions/checkout@v3
+
+      # 2. Set up Node.js, which is required for installing dependencies and the Firebase CLI
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
         with:
-          repoToken: '${{ secrets.GITHUB_TOKEN }}'
-          firebaseServiceAccount: '${{ secrets.FIREBASE_SERVICE_ACCOUNT_PLANAR_ALLIANCE_448817_H0 }}'
-          channelId: live
-          projectId: planar-alliance-448817-h0
+          node-version: '18'
+
+      # 3. Install the dependencies for your Cloud Functions. This is a critical
+      #    step that was missing and likely causing the deployment to fail silently.
+      - name: Install Function Dependencies
+        run: npm --prefix functions install
+
+      # 4. Install the Firebase Command Line Interface
+      - name: Install Firebase CLI
+        run: npm install -g firebase-tools
+
+      # 5. Deploy to Firebase. This step uses the service account secret to authenticate
+      #    and then runs an explicit command to deploy BOTH hosting and functions.
+      - name: Deploy to Firebase
+        run: |
+          firebase deploy --only hosting,functions --project planar-alliance-448817-h0 --token "${{ secrets.FIREBASE_SERVICE_ACCOUNT_PLANAR_ALLIANCE_448817_H0 }}" --non-interactive
