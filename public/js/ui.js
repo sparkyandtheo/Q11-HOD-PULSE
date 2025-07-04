@@ -1,18 +1,18 @@
 // public/js/ui.js
 
 import { signOutUser } from './firebase.js';
-import { showSection } from './main.js';
 
 /**
  * Sets up the navigation links to show the corresponding sections.
+ * @param {function(string): void} showSectionCallback - Callback to show a section.
  */
-export function setupNavigation() {
+export function setupNavigation(showSectionCallback) {
     const navLinks = document.querySelectorAll('nav a');
     navLinks.forEach(link => {
         link.addEventListener('click', (event) => {
             event.preventDefault();
             const sectionId = event.target.getAttribute('data-section');
-            showSection(sectionId);
+            showSectionCallback(sectionId);
         });
     });
 }
