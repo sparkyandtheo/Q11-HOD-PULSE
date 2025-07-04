@@ -8,12 +8,15 @@
 
   <!--
     SCRIPT LOADING ORDER FIX:
-    1. Load the Firebase SDKs first. The `defer` attribute ensures they execute
-       in order after the document is parsed.
-    2. Load the Google Sign-In script AFTER the Firebase scripts. Its `onload`
-       callback relies on a function that will be defined by a script loaded in step 3.
-    3. Load your main application script as a module. This script and its imports
-       (like firebase.js) will define the onGoogleLibraryLoad function.
+    To fix the "onGoogleLibraryLoad is not defined" error, we must ensure
+    the function is defined before the Google script tries to call it.
+
+    1. Load all Firebase SDKs first using `defer` to ensure they execute in order.
+    2. Load your main application script (`main.js`) as a module. This script
+       imports `firebase.js`, which is where `onGoogleLibraryLoad` is defined
+       and attached to the window.
+    3. Finally, load the Google Sign-In script. The `async` and `defer` attributes
+       along with `onload` ensure it runs after the page is ready and our function exists.
   -->
 
   <!-- Step 1: Firebase SDKs -->
@@ -22,20 +25,18 @@
   <script src="/__/firebase/9.6.1/firebase-firestore-compat.js"></script>
   <script src="/__/firebase/init.js"></script>
 
-  <!-- Step 2: Your application's main logic (as a module) -->
-  <!-- This script MUST be loaded before the Google GSI script so that onGoogleLibraryLoad is defined -->
+  <!-- Step 2: Your application's main logic -->
   <script type="module" src="js/main.js" defer></script>
 
   <!-- Step 3: Google Sign-In Library -->
-  <!-- By placing this last with `async` and `defer`, we give our own scripts time to set up the callback. -->
-  <script src="https://accounts.google.com/gsi/client" onload="onGoogleLibraryLoad" async defer></script>
+  <script src="https://accounts.google.com/gsi/client" onload="onGoogleLibraryLoad()" async defer></script>
 
 </head>
 <body>
   <header>
     <h1>HOD Pulse</h1>
     <div id="auth-container">
-        <!-- This will be populated by the Google Sign-In button -->
+        <!-- Google Sign-In button will be rendered here -->
     </div>
     <button id="sign-out" style="display:none;">Sign Out</button>
   </header>

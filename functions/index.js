@@ -1,5 +1,7 @@
 /**
- * This file is updated to correctly handle CORS for a v2 Cloud Function.
+ * This function uses the v2 API. The key to fixing the CORS error for
+ * v2 functions is to pass a `{ cors: true }` option to `onRequest`.
+ * This automatically allows cross-origin requests from any domain.
  */
 const {onRequest} = require("firebase-functions/v2/https");
 const logger = require("firebase-functions/logger");
@@ -8,27 +10,31 @@ const admin = require("firebase-admin");
 admin.initializeApp();
 
 /**
- * For v2 onRequest functions, CORS is enabled by passing a configuration
- * object as the first argument. Setting { cors: true } allows requests
- * from any origin, which is suitable for this public-facing app.
+ * This is the getMapsData function.
+ * By adding { cors: true }, we instruct Firebase to handle the CORS
+ * preflight requests and add the necessary 'Access-Control-Allow-Origin'
+ * header to the response.
  */
 exports.getMapsData = onRequest(
-  { cors: true }, // This is the correct way to enable CORS on a v2 function.
+  { cors: true }, // This is the critical fix for the CORS issue.
   (request, response) => {
     logger.info("getMapsData function triggered", {structuredData: true});
     const address = request.query.address;
 
+    // Check if the address parameter was provided
     if (!address) {
-      logger.warn("Request received without an address.");
-      response.status(400).send({ error: "Address query parameter is required." });
+      logger.warn("Request is missing address parameter.");
+      response.status(400).send({ error: "The 'address' query parameter is required." });
       return;
     }
 
-    logger.info(`Received address: ${address}`);
+    logger.info(`Successfully received address: ${address}`);
 
-    // In a real app, you would process the address. Here, we just confirm receipt.
+    // In a real-world application, you would now use this address to
+    // query a service like the Google Maps Geocoding API.
+    // For now, we'll just send a success response.
     response.status(200).send({
-      message: "Request received successfully by v2 function",
+      message: "Request received successfully by the function",
       address: address
     });
   }

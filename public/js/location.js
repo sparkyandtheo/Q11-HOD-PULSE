@@ -3,7 +3,7 @@
  * which will resolve the 404 "Not Found" errors.
  */
 async function updateLocationVisuals(address) {
-    if (!address) {
+    if (!address || address.trim() === '') {
         console.log("Address is empty, skipping fetch.");
         return;
     }
@@ -11,8 +11,8 @@ async function updateLocationVisuals(address) {
     console.log(`Fetching location data for: ${address}`);
 
     try {
-        // The placeholder 'your-project-id' has been replaced with the
-        // actual project ID from your Firebase project.
+        // The placeholder 'your-project-id' has been replaced with your
+        // actual Firebase project ID to fix the "Failed to fetch" error.
         const projectId = 'planar-alliance-448817-h0';
         const functionUrl = `https://us-central1-${projectId}.cloudfunctions.net/getMapsData`;
 
