@@ -1,25 +1,21 @@
-# .github/workflows/deploy.yml
-
+# This workflow is triggered on a push to the main branch
 name: Deploy to Firebase
-
-on:
+'on':
   push:
     branches:
-      - main # Or your default branch
-
+      - main
 jobs:
-  deploy:
+  build_and_deploy:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout the repository
-        uses: actions/checkout@v4
-      
-      # NOTE: No build step is needed for this project
-
-      - name: Deploy to Firebase
-        uses: FirebaseExtended/action-hosting-deploy@v0
+      - uses: actions/checkout@v2
+      # This step is crucial. It builds and deploys your project.
+      # By default, this action deploys everything defined in your firebase.json
+      # (which includes both hosting and functions), ensuring the entire
+      # project is updated, not just one part.
+      - uses: FirebaseExtended/action-hosting-deploy@v0
         with:
           repoToken: '${{ secrets.GITHUB_TOKEN }}'
-          firebaseServiceAccount: '${{ secrets.FIREBASE_SERVICE_ACCOUNT }}'
-          projectId: 'planar-alliance-448817-h0'
+          firebaseServiceAccount: '${{ secrets.FIREBASE_SERVICE_ACCOUNT_PLANAR_ALLIANCE_448817_H0 }}'
           channelId: live
+          projectId: planar-alliance-448817-h0
