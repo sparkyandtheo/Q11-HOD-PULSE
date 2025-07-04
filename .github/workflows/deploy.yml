@@ -37,5 +37,5 @@ jobs:
           # The Firebase CLI will automatically use this for authentication.
           export GOOGLE_APPLICATION_CREDENTIALS=./gcloud-sa-key.json
 
-          # Deploy to Firebase. The --token flag is removed as it's no longer needed.
-          firebase deploy --only hosting,functions --project planar-alliance-448817-h0 --non-interactive --debug
+          # Deploy to Firebase. The --force flag is added to allow deletion of old functions.
+          firebase deploy --only hosting,functions --project planar-alliance-448817-h0 --non-interactive --debug --force
