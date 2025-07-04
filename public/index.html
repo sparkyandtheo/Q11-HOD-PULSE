@@ -8,15 +8,9 @@
 
   <!--
     SCRIPT LOADING ORDER FIX:
-    To fix the "onGoogleLibraryLoad is not defined" error, we must ensure
-    the function is defined before the Google script tries to call it.
-
-    1. Load all Firebase SDKs first using `defer` to ensure they execute in order.
-    2. Load your main application script (`main.js`) as a module. This script
-       imports `firebase.js`, which is where `onGoogleLibraryLoad` is defined
-       and attached to the window.
-    3. Finally, load the Google Sign-In script. The `async` and `defer` attributes
-       along with `onload` ensure it runs after the page is ready and our function exists.
+    The Google Sign-In script has been removed from here. It is now loaded
+    programmatically from firebase.js to prevent race conditions and ensure
+    our callback function is defined before the script loads.
   -->
 
   <!-- Step 1: Firebase SDKs -->
@@ -27,9 +21,6 @@
 
   <!-- Step 2: Your application's main logic -->
   <script type="module" src="js/main.js" defer></script>
-
-  <!-- Step 3: Google Sign-In Library -->
-  <script src="https://accounts.google.com/gsi/client" onload="onGoogleLibraryLoad()" async defer></script>
 
 </head>
 <body>
