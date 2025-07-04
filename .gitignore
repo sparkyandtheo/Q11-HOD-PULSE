@@ -1,0 +1,13 @@
+# Dependencies
+/node_modules
+/functions/node_modules
+
+# Firebase
+.firebase/
+*.log
+firebase-debug.log
+firebase.json.local
+
+# Mac/Windows
+.DS_Store
+Thumbs.db
