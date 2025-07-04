@@ -23,6 +23,9 @@ function initializeApp() {
     setupEquipmentForms();
     setupLocationForm();
     setupPhoneLogForm();
+
+    // Show the equipment section by default to make the app visible on load
+    showSection('equipment');
 }
 
 // Expose the initialization function to the global scope so the GSI library can call it.

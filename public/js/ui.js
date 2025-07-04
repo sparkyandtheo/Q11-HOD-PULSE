@@ -7,23 +7,17 @@ import { signOutUser } from './firebase.js';
  * @param {object|null} user - The current user object, or null if logged out.
  */
 export function updateAuthUI(user) {
-    const authContainer = document.getElementById('auth-container');
+    const gsiContainer = document.getElementById('gsi-button-container');
     const signOutBtn = document.getElementById('sign-out');
 
     if (user) {
         // User is signed in
-        authContainer.innerHTML = `<span>Welcome, ${user.displayName || user.email}</span>`;
-        if (signOutBtn) {
-            signOutBtn.style.display = 'block';
-            signOutBtn.onclick = () => signOutUser();
-        }
+        if (gsiContainer) gsiContainer.style.display = 'none';
+        if (signOutBtn) signOutBtn.style.display = 'block';
     } else {
         // User is signed out
-        // The Google Sign-In button will be rendered by the GSI library
-        // into the 'gsi-button-container' div which should be inside 'auth-container'.
-        if (signOutBtn) {
-            signOutBtn.style.display = 'none';
-        }
+        if (gsiContainer) gsiContainer.style.display = 'block';
+        if (signOutBtn) signOutBtn.style.display = 'none';
     }
 }
 
@@ -38,7 +32,14 @@ export function setupNavigation(showSectionCallback) {
         link.addEventListener('click', (event) => {
             event.preventDefault();
             const sectionId = event.target.getAttribute('data-section');
-            showSectionCallback(sectionId);
+            if (sectionId) {
+                showSectionCallback(sectionId);
+            }
+            // Also close hamburger menu on mobile after clicking a link
+            const nav = document.querySelector('nav');
+            if (nav.classList.contains('active')) {
+                nav.classList.remove('active');
+            }
         });
     });
 }
@@ -49,7 +50,7 @@ export function setupNavigation(showSectionCallback) {
 export function setupHamburgerMenu() {
     const hamburger = document.querySelector('.hamburger');
     const nav = document.querySelector('nav');
-    const signOutBtn = document.getElementById('signOutBtn');
+    const signOutBtn = document.getElementById('sign-out'); // Corrected ID
 
     if (hamburger) {
         hamburger.addEventListener('click', () => {
@@ -63,12 +64,6 @@ export function setupHamburgerMenu() {
             nav.classList.remove('active');
         }
     };
-
-    // Add event listeners to nav links to close the menu on click
-    const navLinks = nav.querySelectorAll('a');
-    navLinks.forEach(link => {
-        link.addEventListener('click', closeNav);
-    });
 
     // Add event listener for the sign-out button
     if (signOutBtn) {
