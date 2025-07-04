@@ -7,16 +7,16 @@ import { setupLocationForm, displayLocations } from './location.js';
 import { setupPhoneLogForm, displayPhoneLog } from './phoneLog.js';
 
 /**
- * This function is called by the Google Identity Services library when it's loaded.
- * It serves as the main entry point for the application.
+ * This function initializes the main application logic.
+ * It's called after the DOM and Google library are ready.
  */
 function initializeApp() {
-    console.log("Google library loaded, initializing app.");
+    console.log("App initializing.");
 
-    // Pass updateAuthUI as a callback to setupAuthentication to break the circular dependency
+    // Pass updateAuthUI as a callback to setupAuthentication to avoid circular dependencies.
     setupAuthentication(updateAuthUI);
     
-    // Pass showSection as a callback to setupNavigation
+    // Pass showSection as a callback to setupNavigation.
     setupNavigation(showSection);
 
     setupHamburgerMenu();
@@ -24,12 +24,24 @@ function initializeApp() {
     setupLocationForm();
     setupPhoneLogForm();
 
-    // Show the equipment section by default to make the app visible on load
+    // Show the equipment section by default to make the app visible on load.
     showSection('equipment');
 }
 
-// Expose the initialization function to the global scope so the GSI library can call it.
-window.googleLibraryLoaded = initializeApp;
+// Wait for the DOM to be fully loaded before trying to initialize the app.
+document.addEventListener('DOMContentLoaded', () => {
+    // The Google Identity Services library loads asynchronously.
+    // We need to wait for the global `google` object to be available.
+    const checkGoogle = setInterval(() => {
+        if (typeof google !== 'undefined' && google.accounts) {
+            console.log("Google library is loaded.");
+            clearInterval(checkGoogle);
+            initializeApp();
+        } else {
+            console.log("Waiting for Google library to load...");
+        }
+    }, 100); // Check every 100ms.
+});
 
 
 /**

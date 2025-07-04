@@ -6,10 +6,10 @@
     <title>HOD Pulse</title>
     <link rel="stylesheet" href="styles.css">
     <link rel="stylesheet" href="admin.css">
-    <!-- Main app script, defines the callback -->
+    <!-- Google Identity Services script - async defer allows it to load without blocking -->
+    <script src="https://accounts.google.com/gsi/client" async defer></script>
+    <!-- Main app script, loaded as a module -->
     <script type="module" src="js/main.js"></script>
-    <!-- Google Identity Services script with onload callback -->
-    <script src="https://accounts.google.com/gsi/client" onload="googleLibraryLoaded()" async defer></script>
     <style>
         /* Add styles to ensure header layout is correct */
         header {
@@ -18,17 +18,51 @@
             align-items: center;
             padding: 1rem;
             background-color: #f8f9fa;
+            flex-wrap: wrap;
+        }
+        nav {
+            display: flex;
+            gap: 15px;
         }
         #auth-container {
             display: flex;
             align-items: center;
             gap: 10px;
         }
+        /* Basic responsive styles for the header */
+        @media (max-width: 768px) {
+            nav {
+                display: none;
+                width: 100%;
+                flex-direction: column;
+                align-items: center;
+            }
+            nav.active {
+                display: flex;
+            }
+            #auth-container {
+                 display: none;
+            }
+            #auth-container.active {
+                display: flex;
+                width: 100%;
+                justify-content: center;
+                margin-top: 10px;
+            }
+            .hamburger {
+                display: block; /* Hamburger is shown on mobile */
+            }
+        }
     </style>
 </head>
 <body>
     <header>
         <h1>HOD Pulse</h1>
+        <div class="hamburger">
+            <span></span>
+            <span></span>
+            <span></span>
+        </div>
         <nav>
             <a href="#" data-section="equipment">Equipment</a>
             <a href="#" data-section="locations">Locations</a>
@@ -38,11 +72,6 @@
             <div id="gsi-button-container"></div>
             <span id="user-welcome" style="display:none;"></span>
             <button id="sign-out" style="display:none;">Sign Out</button>
-        </div>
-        <div class="hamburger">
-            <span></span>
-            <span></span>
-            <span></span>
         </div>
     </header>
 
