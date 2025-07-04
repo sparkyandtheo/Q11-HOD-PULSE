@@ -1,0 +1,137 @@
+body {
+    background-color: var(--clr-bg);
+}
+
+.admin-layout {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 2rem;
+    padding: 1rem;
+    max-width: 1400px;
+    margin: auto;
+}
+
+#admin-auth-wall {
+    text-align: center;
+    padding: 3rem;
+    background-color: #fff;
+    border-radius: var(--radius);
+    box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1);
+}
+
+.admin-form-container, .admin-table-container {
+    background: #fff;
+    padding: 1.5rem;
+    border-radius: var(--radius);
+    box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1);
+}
+
+.admin-form-container h3, .admin-table-container h3 {
+    margin-top: 0;
+    border-bottom: 1px solid var(--clr-light-gray);
+    padding-bottom: 0.5rem;
+    margin-bottom: 1rem;
+}
+
+#contact-form {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+}
+
+.form-controls {
+    grid-column: 1 / -1;
+    display: flex;
+    gap: 1rem;
+    justify-content: flex-end;
+}
+
+#search-contacts {
+    width: 100%;
+    padding: .65rem;
+    border-radius: 6px;
+    border: 1px solid #d6d3d1;
+    font: inherit;
+    margin-bottom: 1rem;
+}
+
+.table-wrapper {
+    max-height: 60vh;
+    overflow-y: auto;
+}
+
+#contacts-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+#contacts-table th, #contacts-table td {
+    padding: 0.75rem;
+    text-align: left;
+    border-bottom: 1px solid var(--clr-light-gray);
+}
+
+#contacts-table th {
+    background-color: #f5f5f4;
+    font-weight: 600;
+    position: sticky;
+    top: 0;
+}
+
+#contacts-table tbody tr:hover {
+    background-color: #e7e5e4;
+}
+
+.action-buttons button {
+    margin-right: 0.5rem;
+    padding: 0.25rem 0.5rem;
+    font-size: 0.8rem;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.action-buttons .edit-btn {
+    background-color: var(--clr-primary);
+    color: white;
+    border: 1px solid var(--clr-primary);
+}
+.action-buttons .edit-btn:hover {
+    background-color: var(--clr-primary-dark);
+}
+
+.action-buttons .delete-btn {
+    background-color: var(--clr-danger);
+    color: white;
+    border: 1px solid var(--clr-danger);
+}
+.action-buttons .delete-btn:hover {
+    background-color: var(--clr-danger-hover);
+}
+
+@media(min-width: 1024px) {
+    .admin-layout {
+        grid-template-columns: 400px 1fr;
+    }
+}
+
+/* Dark Mode Styles */
+body.dark-mode #admin-auth-wall,
+body.dark-mode .admin-form-container,
+body.dark-mode .admin-table-container {
+    background-color: #44403c;
+    color: #f5f5f4;
+}
+
+body.dark-mode #search-contacts {
+    background-color: #57534e;
+    border-color: #78716c;
+    color: #f5f5f4;
+}
+
+body.dark-mode #contacts-table th {
+    background-color: #292524;
+}
+
+body.dark-mode #contacts-table tbody tr:hover {
+    background-color: #57534e;
+}

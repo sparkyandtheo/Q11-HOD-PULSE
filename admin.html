@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Phone Log Admin</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="admin.css">
+</head>
+<body>
+    <header class="main-header">
+        <h1>Phone Log Admin</h1>
+        <div id="auth-container">
+             <div id="gsi-button-container"></div>
+             <button type="button" id="signOutBtn" style="display: none;">Sign Out</button>
+        </div>
+    </header>
+
+    <main class="admin-layout">
+        <div id="admin-auth-wall">
+            <p>You must be an authorized administrator to view this page.</p>
+        </div>
+
+        <div id="admin-content" style="display: none;">
+            <div class="admin-form-container">
+                <form id="contact-form">
+                    <h3>Add / Edit Contact</h3>
+                    <input type="hidden" id="contact-id">
+                    <div class="form-group">
+                        <label for="contact-name">Name</label>
+                        <input type="text" id="contact-name" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="contact-primaryPhone">Primary Phone</label>
+                        <input type="text" id="contact-primaryPhone">
+                    </div>
+                     <div class="form-group">
+                        <label for="contact-secondaryPhone">Secondary Phone</label>
+                        <input type="text" id="contact-secondaryPhone">
+                    </div>
+                    <div class="form-group">
+                        <label for="contact-extension">Extension</label>
+                        <input type="text" id="contact-extension">
+                    </div>
+                    <div class="form-group">
+                        <label for="contact-email">Email</label>
+                        <input type="email" id="contact-email">
+                    </div>
+                    <div class="form-group">
+                        <label for="contact-department">Department</label>
+                        <input type="text" id="contact-department">
+                    </div>
+                    <div class="form-controls">
+                        <button type="submit">Save Contact</button>
+                        <button type="button" id="clear-form-btn">Clear</button>
+                    </div>
+                </form>
+            </div>
+            <div class="admin-table-container">
+                <h3>Current Contacts</h3>
+                <input type="text" id="search-contacts" placeholder="Search contacts...">
+                <div class="table-wrapper">
+                    <table id="contacts-table">
+                        <thead>
+                            <tr>
+                                <th>Name</th>
+                                <th>Primary Phone</th>
+                                <th>Extension</th>
+                                <th>Department</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <!-- Contact rows will be inserted here by JavaScript -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <div id="toast-container"></div>
+
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
+    <script type="module" src="js/admin.js"></script>
+</body>
+</html>
