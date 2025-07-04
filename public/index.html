@@ -8,18 +8,18 @@
 
   <!--
     SCRIPT LOADING ORDER FIX:
-    The Google Sign-In script has been removed from here. It is now loaded
-    programmatically from firebase.js to prevent race conditions and ensure
-    our callback function is defined before the script loads.
+    The Google Sign-In script is loaded programmatically by firebase.js.
+    The core Firebase SDKs are loaded first to ensure the firebase object
+    is available globally for other scripts.
   -->
 
-  <!-- Step 1: Firebase SDKs -->
+  <!-- Step 1: Firebase SDKs (loaded synchronously) -->
   <script src="/__/firebase/9.6.1/firebase-app-compat.js"></script>
   <script src="/__/firebase/9.6.1/firebase-auth-compat.js"></script>
   <script src="/__/firebase/9.6.1/firebase-firestore-compat.js"></script>
   <script src="/__/firebase/init.js"></script>
 
-  <!-- Step 2: Your application's main logic -->
+  <!-- Step 2: Your application's main logic (loaded as a deferred module) -->
   <script type="module" src="js/main.js" defer></script>
 
 </head>

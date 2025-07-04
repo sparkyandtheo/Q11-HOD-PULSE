@@ -1,0 +1,11 @@
+{
+  "name": "q11-hod-pulse",
+  "version": "1.0.0",
+  "description": "HOD Pulse Application",
+  "main": "public/js/main.js",
+  "scripts": {
+    "build": "echo 'No build step required, using public directory as is.' && exit 0"
+  },
+  "author": "",
+  "license": "ISC"
+}
