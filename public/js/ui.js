@@ -3,6 +3,32 @@
 import { signOutUser } from './firebase.js';
 
 /**
+ * Updates the authentication UI based on the user's login status.
+ * @param {object|null} user - The current user object, or null if logged out.
+ */
+export function updateAuthUI(user) {
+    const authContainer = document.getElementById('auth-container');
+    const signOutBtn = document.getElementById('sign-out');
+
+    if (user) {
+        // User is signed in
+        authContainer.innerHTML = `<span>Welcome, ${user.displayName || user.email}</span>`;
+        if (signOutBtn) {
+            signOutBtn.style.display = 'block';
+            signOutBtn.onclick = () => signOutUser();
+        }
+    } else {
+        // User is signed out
+        // The Google Sign-In button will be rendered by the GSI library
+        // into the 'gsi-button-container' div which should be inside 'auth-container'.
+        if (signOutBtn) {
+            signOutBtn.style.display = 'none';
+        }
+    }
+}
+
+
+/**
  * Sets up the navigation links to show the corresponding sections.
  * @param {function(string): void} showSectionCallback - Callback to show a section.
  */
