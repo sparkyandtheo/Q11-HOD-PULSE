@@ -12,14 +12,13 @@ jobs:
       - name: Checkout Repository
         uses: actions/checkout@v3
 
-      # 2. Set up Node.js, which is required for installing dependencies and the Firebase CLI
+      # 2. Set up Node.js
       - name: Set up Node.js
         uses: actions/setup-node@v3
         with:
           node-version: '18'
 
-      # 3. Install the dependencies for your Cloud Functions. This is a critical
-      #    step that was missing and likely causing the deployment to fail silently.
+      # 3. Install Function Dependencies
       - name: Install Function Dependencies
         run: npm --prefix functions install
 
@@ -27,8 +26,8 @@ jobs:
       - name: Install Firebase CLI
         run: npm install -g firebase-tools
 
-      # 5. Deploy to Firebase. This step uses the service account secret to authenticate
-      #    and then runs an explicit command to deploy BOTH hosting and functions.
+      # 5. Deploy to Firebase with Debug Output
+      # The --debug flag has been added to provide a verbose log.
       - name: Deploy to Firebase
         run: |
-          firebase deploy --only hosting,functions --project planar-alliance-448817-h0 --token "${{ secrets.FIREBASE_SERVICE_ACCOUNT_PLANAR_ALLIANCE_448817_H0 }}" --non-interactive
+          firebase deploy --only hosting,functions --project planar-alliance-448817-h0 --token "${{ secrets.FIREBASE_SERVICE_ACCOUNT_PLANAR_ALLIANCE_448817_H0 }}" --non-interactive --debug
