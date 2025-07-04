@@ -1,39 +1,25 @@
 # .github/workflows/deploy.yml
 
-name: Build and Deploy to Firebase
+name: Deploy to Firebase
 
 on:
   push:
     branches:
-      - main # Or your default branch name
+      - main # Or your default branch
 
 jobs:
-  build_and_deploy:
+  deploy:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout the repository
         uses: actions/checkout@v4
+      
+      # NOTE: No build step is needed for this project
 
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
+      - name: Deploy to Firebase
+        uses: FirebaseExtended/action-hosting-deploy@v0
         with:
-          node-version: 18
-
-      # ---- ADDED THIS PART FOR YOUR WEBSITE ----
-      - name: Install website dependencies and build
-        run: npm install && npm run build
-      # -----------------------------------------
-
-      - name: Install dependencies for Cloud Functions
-        run: npm --prefix ./functions install
-
-      - name: Setup Firebase and Deploy
-        uses: w9jds/firebase-action@master
-        with:
-          action: deploy
-          firebase_token: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
-          firebase_project_id: 'planar-alliance-448817-h0'
-        env:
-          FIREBASE_CLI_PREVIEWS: functions
-          GCLOUD_PROJECT: 'planar-alliance-448817-h0'
-          FIREBASE_FUNCTIONS_CONFIG_SET: maps.key=${{ secrets.MAPS_API_KEY }}
+          repoToken: '${{ secrets.GITHUB_TOKEN }}'
+          firebaseServiceAccount: '${{ secrets.FIREBASE_SERVICE_ACCOUNT }}'
+          projectId: 'planar-alliance-448817-h0'
+          channelId: live
