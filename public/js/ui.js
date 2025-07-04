@@ -9,15 +9,21 @@ import { signOutUser } from './firebase.js';
 export function updateAuthUI(user) {
     const gsiContainer = document.getElementById('gsi-button-container');
     const signOutBtn = document.getElementById('sign-out');
+    const userWelcome = document.getElementById('user-welcome');
 
     if (user) {
         // User is signed in
         if (gsiContainer) gsiContainer.style.display = 'none';
         if (signOutBtn) signOutBtn.style.display = 'block';
+        if (userWelcome) {
+            userWelcome.textContent = `Welcome, ${user.displayName || user.email}`;
+            userWelcome.style.display = 'inline';
+        }
     } else {
         // User is signed out
         if (gsiContainer) gsiContainer.style.display = 'block';
         if (signOutBtn) signOutBtn.style.display = 'none';
+        if (userWelcome) userWelcome.style.display = 'none';
     }
 }
 
@@ -50,26 +56,15 @@ export function setupNavigation(showSectionCallback) {
 export function setupHamburgerMenu() {
     const hamburger = document.querySelector('.hamburger');
     const nav = document.querySelector('nav');
-    const signOutBtn = document.getElementById('sign-out'); // Corrected ID
+    const authContainer = document.getElementById('auth-container');
 
     if (hamburger) {
         hamburger.addEventListener('click', () => {
             nav.classList.toggle('active');
-        });
-    }
-
-    // Function to close the navigation menu
-    const closeNav = () => {
-        if (nav.classList.contains('active')) {
-            nav.classList.remove('active');
-        }
-    };
-
-    // Add event listener for the sign-out button
-    if (signOutBtn) {
-        signOutBtn.addEventListener('click', () => {
-            signOutUser();
-            closeNav();
+            // Also toggle the auth container for mobile view
+            if (authContainer) {
+                authContainer.classList.toggle('active');
+            }
         });
     }
 }

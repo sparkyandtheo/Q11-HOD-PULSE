@@ -1,52 +1,121 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>HOD Pulse</title>
-  <link rel="stylesheet" href="styles.css">
-
-  <!--
-    SCRIPT LOADING ORDER FIX:
-    The Google Sign-In script is loaded programmatically by firebase.js.
-    The core Firebase SDKs are loaded first to ensure the firebase object
-    is available globally for other scripts.
-  -->
-
-  <!-- Step 1: Firebase SDKs (loaded synchronously) -->
-  <script src="/__/firebase/9.6.1/firebase-app-compat.js"></script>
-  <script src="/__/firebase/9.6.1/firebase-auth-compat.js"></script>
-  <script src="/__/firebase/9.6.1/firebase-firestore-compat.js"></script>
-  <script src="/__/firebase/init.js"></script>
-
-  <!-- Step 2: Your application's main logic (loaded as a deferred module) -->
-  <script type="module" src="js/main.js" defer></script>
-
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HOD Pulse</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="admin.css">
+    <!-- Main app script, defines the callback -->
+    <script type="module" src="js/main.js"></script>
+    <!-- Google Identity Services script with onload callback -->
+    <script src="https://accounts.google.com/gsi/client" onload="googleLibraryLoaded()" async defer></script>
+    <style>
+        /* Add styles to ensure header layout is correct */
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem;
+            background-color: #f8f9fa;
+        }
+        #auth-container {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+    </style>
 </head>
 <body>
-  <header>
-    <h1>HOD Pulse</h1>
-    <div id="auth-container">
-        <!-- Google Sign-In button will be rendered here -->
-    </div>
-    <button id="sign-out" style="display:none;">Sign Out</button>
-  </header>
+    <header>
+        <h1>HOD Pulse</h1>
+        <nav>
+            <a href="#" data-section="equipment">Equipment</a>
+            <a href="#" data-section="locations">Locations</a>
+            <a href="#" data-section="phone-log">Phone Log</a>
+        </nav>
+        <div id="auth-container">
+            <div id="gsi-button-container"></div>
+            <span id="user-welcome" style="display:none;"></span>
+            <button id="sign-out" style="display:none;">Sign Out</button>
+        </div>
+        <div class="hamburger">
+            <span></span>
+            <span></span>
+            <span></span>
+        </div>
+    </header>
 
-  <main>
-    <div class="container">
-      <h2>Phone Log</h2>
-      <ul id="phone-log-list">
-        <!-- Phone log entries will be populated here -->
-      </ul>
-    </div>
-    <div class="container">
-      <h2>Location Info</h2>
-      <textarea id="address-input" placeholder="Enter an address..."></textarea>
-      <div id="location-data">
-        <!-- Location data will appear here -->
-      </div>
-    </div>
-  </main>
+    <main>
+        <div id="spinner" style="display: none;">Loading...</div>
+
+        <!-- Equipment Section -->
+        <section id="equipment" style="display: none;">
+            <h2>Equipment</h2>
+            <form id="add-equipment-form">
+                <input type="text" id="equipment-name" placeholder="Equipment Name" required>
+                <input type="text" id="equipment-user" placeholder="User" required>
+                <textarea id="equipment-notes" placeholder="Notes"></textarea>
+                <button type="submit">Add Equipment</button>
+            </form>
+            <table id="equipment-table">
+                <thead>
+                    <tr>
+                        <th>Name</th>
+                        <th>User</th>
+                        <th>Notes</th>
+                    </tr>
+                </thead>
+                <tbody id="equipment-table-body">
+                    <!-- Equipment data will be populated here -->
+                </tbody>
+            </table>
+        </section>
+
+        <!-- Locations Section -->
+        <section id="locations" style="display: none;">
+            <h2>Locations</h2>
+            <form id="add-location-form">
+                <input type="text" id="location-name" placeholder="Location Name" required>
+                <textarea id="location-notes" placeholder="Notes"></textarea>
+                <button type="submit">Add Location</button>
+            </form>
+            <table id="locations-table">
+                <thead>
+                    <tr>
+                        <th>Name</th>
+                        <th>Notes</th>
+                    </tr>
+                </thead>
+                <tbody id="locations-table-body">
+                    <!-- Location data will be populated here -->
+                </tbody>
+            </table>
+        </section>
+
+        <!-- Phone Log Section -->
+        <section id="phone-log" style="display: none;">
+            <h2>Phone Log</h2>
+            <form id="add-phone-log-form">
+                <input type="text" id="phone-log-name" placeholder="Name" required>
+                <input type="tel" id="phone-log-number" placeholder="Phone Number">
+                <textarea id="phone-log-notes" placeholder="Notes"></textarea>
+                <button type="submit">Add Log Entry</button>
+            </form>
+            <table id="phone-log-table">
+                <thead>
+                    <tr>
+                        <th>Name</th>
+                        <th>Number</th>
+                        <th>Notes</th>
+                    </tr>
+                </thead>
+                <tbody id="phone-log-table-body">
+                    <!-- Phone log data will be populated here -->
+                </tbody>
+            </table>
+        </section>
+    </main>
 
 </body>
 </html>
