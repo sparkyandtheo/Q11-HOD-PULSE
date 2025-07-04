@@ -1,13 +1,18 @@
 // public/js/main.js
 
 import { setupAuthentication } from './firebase.js';
-// Import updateAuthUI here to pass it as a callback
 import { setupNavigation, setupHamburgerMenu, updateAuthUI } from './ui.js';
 import { setupEquipmentForms, displayEquipment } from './equipment.js';
 import { setupLocationForm, displayLocations } from './location.js';
 import { setupPhoneLogForm, displayPhoneLog } from './phoneLog.js';
 
-document.addEventListener('DOMContentLoaded', () => {
+/**
+ * This function is called by the Google Identity Services library when it's loaded.
+ * It serves as the main entry point for the application.
+ */
+function initializeApp() {
+    console.log("Google library loaded, initializing app.");
+
     // Pass updateAuthUI as a callback to setupAuthentication to break the circular dependency
     setupAuthentication(updateAuthUI);
     
@@ -18,7 +23,11 @@ document.addEventListener('DOMContentLoaded', () => {
     setupEquipmentForms();
     setupLocationForm();
     setupPhoneLogForm();
-});
+}
+
+// Expose the initialization function to the global scope so the GSI library can call it.
+window.googleLibraryLoaded = initializeApp;
+
 
 /**
  * Shows the specified section and hides others. Also triggers data loading for the section.

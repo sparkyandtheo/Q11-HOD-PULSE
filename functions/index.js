@@ -1,104 +1,41 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>HOD Pulse</title>
-    <link rel="stylesheet" href="styles.css">
-    <link rel="stylesheet" href="admin.css">
-    <!-- Google Identity Services script -->
-    <script src="https://accounts.google.com/gsi/client" async defer></script>
-</head>
-<body>
-    <header>
-        <h1>HOD Pulse</h1>
-        <div class="hamburger">
-            <span></span>
-            <span></span>
-            <span></span>
-        </div>
-        <nav>
-            <a href="#" data-section="equipment">Equipment</a>
-            <a href="#" data-section="locations">Locations</a>
-            <a href="#" data-section="phone-log">Phone Log</a>
-            <div id="auth-container">
-                <div id="gsi-button-container"></div>
-            </div>
-            <button id="sign-out" style="display:none;">Sign Out</button>
-        </nav>
-    </header>
+/**
+ * This function uses the v2 API. The key to fixing the CORS error for
+ * v2 functions is to pass a `{ cors: true }` option to `onRequest`.
+ * This automatically allows cross-origin requests from any domain.
+ */
+const {onRequest} = require("firebase-functions/v2/https");
+const logger = require("firebase-functions/logger");
+const admin = require("firebase-admin");
 
-    <main>
-        <div id="spinner" style="display: none;">Loading...</div>
+admin.initializeApp();
 
-        <!-- Equipment Section -->
-        <section id="equipment" style="display: none;">
-            <h2>Equipment</h2>
-            <form id="add-equipment-form">
-                <input type="text" id="equipment-name" placeholder="Equipment Name" required>
-                <input type="text" id="equipment-user" placeholder="User" required>
-                <textarea id="equipment-notes" placeholder="Notes"></textarea>
-                <button type="submit">Add Equipment</button>
-            </form>
-            <table id="equipment-table">
-                <thead>
-                    <tr>
-                        <th>Name</th>
-                        <th>User</th>
-                        <th>Notes</th>
-                    </tr>
-                </thead>
-                <tbody id="equipment-table-body">
-                    <!-- Equipment data will be populated here -->
-                </tbody>
-            </table>
-        </section>
+/**
+ * This is the getMapsData function.
+ * By adding { cors: true }, we instruct Firebase to handle the CORS
+ * preflight requests and add the necessary 'Access-Control-Allow-Origin'
+ * header to the response.
+ */
+exports.getMapsData = onRequest(
+  { cors: true }, // This is the critical fix for the CORS issue.
+  (request, response) => {
+    logger.info("getMapsData function triggered", {structuredData: true});
+    const address = request.query.address;
 
-        <!-- Locations Section -->
-        <section id="locations" style="display: none;">
-            <h2>Locations</h2>
-            <form id="add-location-form">
-                <input type="text" id="location-name" placeholder="Location Name" required>
-                <textarea id="location-notes" placeholder="Notes"></textarea>
-                <button type="submit">Add Location</button>
-            </form>
-            <table id="locations-table">
-                <thead>
-                    <tr>
-                        <th>Name</th>
-                        <th>Notes</th>
-                    </tr>
-                </thead>
-                <tbody id="locations-table-body">
-                    <!-- Location data will be populated here -->
-                </tbody>
-            </table>
-        </section>
+    // Check if the address parameter was provided
+    if (!address) {
+      logger.warn("Request is missing address parameter.");
+      response.status(400).send({ error: "The 'address' query parameter is required." });
+      return;
+    }
 
-        <!-- Phone Log Section -->
-        <section id="phone-log" style="display: none;">
-            <h2>Phone Log</h2>
-            <form id="add-phone-log-form">
-                <input type="text" id="phone-log-name" placeholder="Name" required>
-                <input type="tel" id="phone-log-number" placeholder="Phone Number">
-                <textarea id="phone-log-notes" placeholder="Notes"></textarea>
-                <button type="submit">Add Log Entry</button>
-            </form>
-            <table id="phone-log-table">
-                <thead>
-                    <tr>
-                        <th>Name</th>
-                        <th>Number</th>
-                        <th>Notes</th>
-                    </tr>
-                </thead>
-                <tbody id="phone-log-table-body">
-                    <!-- Phone log data will be populated here -->
-                </tbody>
-            </table>
-        </section>
-    </main>
+    logger.info(`Successfully received address: ${address}`);
 
-    <script type="module" src="js/main.js"></script>
-</body>
-</html>
+    // In a real-world application, you would now use this address to
+    // query a service like the Google Maps Geocoding API.
+    // For now, we'll just send a success response.
+    response.status(200).send({
+      message: "Request received successfully",
+      address: address
+    });
+  }
+);
