@@ -19,6 +19,11 @@ jobs:
         with:
           node-version: 18
 
+      # ---- ADDED THIS PART FOR YOUR WEBSITE ----
+      - name: Install website dependencies and build
+        run: npm install && npm run build
+      # -----------------------------------------
+
       - name: Install dependencies for Cloud Functions
         run: npm --prefix ./functions install
 
