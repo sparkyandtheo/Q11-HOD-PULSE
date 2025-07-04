@@ -1,45 +1,35 @@
 /**
- * Import function triggers from their respective submodules:
- *
- * const {onCall} = require("firebase-functions/v2/https");
- * const {onDocumentWritten} = require("firebase-functions/v2/firestore");
- *
- * See a full list of supported triggers at https://firebase.google.com/docs/functions
+ * This file is updated to correctly handle CORS for a v2 Cloud Function.
  */
-
 const {onRequest} = require("firebase-functions/v2/https");
 const logger = require("firebase-functions/logger");
 const admin = require("firebase-admin");
-// Import and configure the cors middleware
-const cors = require("cors")({ origin: true });
 
 admin.initializeApp();
 
-
-// Create and deploy your first functions
-// https://firebase.google.com/docs/functions/get-started
-
-// exports.helloWorld = onRequest((request, response) => {
-//   logger.info("Hello logs!", {structuredData: true});
-//   response.send("Hello from Firebase!");
-// });
-
-// The function that was causing CORS errors
-exports.getMapsData = onRequest((request, response) => {
-  // Use the cors middleware to handle the request
-  cors(request, response, () => {
+/**
+ * For v2 onRequest functions, CORS is enabled by passing a configuration
+ * object as the first argument. Setting { cors: true } allows requests
+ * from any origin, which is suitable for this public-facing app.
+ */
+exports.getMapsData = onRequest(
+  { cors: true }, // This is the correct way to enable CORS on a v2 function.
+  (request, response) => {
     logger.info("getMapsData function triggered", {structuredData: true});
     const address = request.query.address;
 
-    // In a real application, you would use this address to query
-    // the Google Maps API or another service.
-    // For this example, we'll just log it and send a success response.
+    if (!address) {
+      logger.warn("Request received without an address.");
+      response.status(400).send({ error: "Address query parameter is required." });
+      return;
+    }
+
     logger.info(`Received address: ${address}`);
 
-    // Respond with a success message.
+    // In a real app, you would process the address. Here, we just confirm receipt.
     response.status(200).send({
-      message: "Request received successfully",
+      message: "Request received successfully by v2 function",
       address: address
     });
-  });
-});
+  }
+);

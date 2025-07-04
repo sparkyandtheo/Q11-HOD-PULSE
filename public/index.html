@@ -1,296 +1,60 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <meta name="description" content="Overhead Door – Job intake form with vertical tabs, local CRUD, omni‑search, autosave and export." />
-  <title>QUASAR 11 (Firebase Integrated)</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <!-- MODIFICATION: Added JetBrains Mono for the IDE feel -->
-  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>HOD Pulse</title>
   <link rel="stylesheet" href="styles.css">
-  <script src="https://accounts.google.com/gsi/client" onload="onGoogleLibraryLoad()" async defer></script>
+
+  <!--
+    SCRIPT LOADING ORDER FIX:
+    1. Load the Firebase SDKs first. The `defer` attribute ensures they execute
+       in order after the document is parsed.
+    2. Load the Google Sign-In script AFTER the Firebase scripts. Its `onload`
+       callback relies on a function that will be defined by a script loaded in step 3.
+    3. Load your main application script as a module. This script and its imports
+       (like firebase.js) will define the onGoogleLibraryLoad function.
+  -->
+
+  <!-- Step 1: Firebase SDKs -->
+  <script src="/__/firebase/9.6.1/firebase-app-compat.js"></script>
+  <script src="/__/firebase/9.6.1/firebase-auth-compat.js"></script>
+  <script src="/__/firebase/9.6.1/firebase-firestore-compat.js"></script>
+  <script src="/__/firebase/init.js"></script>
+
+  <!-- Step 2: Your application's main logic (as a module) -->
+  <!-- This script MUST be loaded before the Google GSI script so that onGoogleLibraryLoad is defined -->
+  <script type="module" src="js/main.js" defer></script>
+
+  <!-- Step 3: Google Sign-In Library -->
+  <!-- By placing this last with `async` and `defer`, we give our own scripts time to set up the callback. -->
+  <script src="https://accounts.google.com/gsi/client" onload="onGoogleLibraryLoad" async defer></script>
+
 </head>
 <body>
-  <div id="command-overlay" class="command-overlay">
-    <div class="command-palette">
-        <input type="text" id="command-box" placeholder="Search for a job or type a command (e.g., >new)" autocomplete="off">
-        <div id="command-results" class="search-results-dropdown" style="position: static; border-radius: var(--radius); margin-top: 0.5rem;"></div>
+  <header>
+    <h1>HOD Pulse</h1>
+    <div id="auth-container">
+        <!-- This will be populated by the Google Sign-In button -->
     </div>
-  </div>
-
-  <div id="mySidenav" class="sidenav">
-    <a href="javascript:void(0)" class="closebtn" id="closeNavBtn">×</a>
-    <div class="sidenav-content">
-        <h3>Settings</h3>
-        <div class="form-group">
-            <label for="master-initials">Your Initials</label>
-            <input type="text" id="master-initials" maxlength="3" placeholder="e.g. ABC">
-        </div>
-        <div class="form-group" style="margin-top: 1rem;">
-            <a href="/admin.html" id="admin-link" class="admin-panel-link">Admin Panel</a>
-        </div>
-        <div class="form-group" style="margin-bottom: 1rem; padding-top: 1rem; border-top: 1px solid var(--clr-border);">
-            <label for="darkModeToggle" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0;">
-                Dark Mode
-                <input type="checkbox" id="darkModeToggle" />
-            </label>
-        </div>
-
-    </div>
-  </div>
-  <div id="overlay"></div>
-
-  <header class="main-header">
-    <div class="header-left">
-        <div class="logo-container">
-            <img src="https://www.hamburgdoor.com/templates/custom/hamburgoverhead-2018/images/logo.png" alt="Hamburg Overhead Door Logo">
-        </div>
-    </div>
-    <div class="header-right">
-        <div id="auth-container">
-             <div id="gsi-button-container"></div>
-             <button type="button" id="signOutBtn" style="display: none;">Sign Out</button>
-        </div>
-        <button class="hamburger-btn" id="openNavBtn">☰</button>
-    </div>
+    <button id="sign-out" style="display:none;">Sign Out</button>
   </header>
 
-  <div class="controls">
-    <div class="controls-main">
-        <button type="button" id="newFormBtnTop">New Job</button>
-        <button type="button" id="saveBtn">Save Job</button>
-        <div id="save-status"></div>
-        <button type="button" id="genServiceTicketOutputBtn">TS Service Ticket Output</button>
-        <button type="button" id="genQuoteOutputBtn">TS Quote Output</button>
-        <button type="button" id="printBtn">🖨️ Print Job</button>
+  <main>
+    <div class="container">
+      <h2>Phone Log</h2>
+      <ul id="phone-log-list">
+        <!-- Phone log entries will be populated here -->
+      </ul>
     </div>
-  </div>
+    <div class="container">
+      <h2>Location Info</h2>
+      <textarea id="address-input" placeholder="Enter an address..."></textarea>
+      <div id="location-data">
+        <!-- Location data will appear here -->
+      </div>
+    </div>
+  </main>
 
-  <div class="layout">
-    <div class="tab-container">
-      <div class="tab-nav-wrapper">
-        <div class="tab-nav">
-            <button class="tab-button active" data-tab="contact-request">Contact & Request</button>
-            <button class="tab-button" data-tab="equipment">Equipment</button>
-            <button class="tab-button" data-tab="payment">Payment</button>
-            <button class="tab-button" data-tab="quote">Quote</button>
-            <button class="tab-button" data-tab="email">Email</button>
-        </div>
-        <div class="form-group" style="margin-top: 1.5rem;">
-            <label for="tsNumber-main" style="font-weight: 700;">TS Number</label>
-            <input type="text" id="tsNumber-main" />
-        </div>
-      </div>
-      <div class="tab-content">
-        <form id="intakeForm" novalidate>
-          <input type="hidden" id="docId" />
-          <input type="hidden" id="initials" />
-          <input type="hidden" id="current-date" />
-          <input type="hidden" id="current-time" />
-          
-          <div class="tab-panel active" data-tab-content="contact-request">
-            <div class="doc-id-display full-width"></div>
-            <h3>Contact & Request</h3>
-            
-            <div class="contact-request-grid">
-                <div class="form-group">
-                    <label for="callType">Call Type</label>
-                    <select id="callType">
-                        <option value="Service">Service</option>
-                        <option value="Sales">Sales</option>
-                        <option value="Warranty">Warranty</option>
-                    </select>
-                </div>
-                 <div class="form-group">
-                  <label for="name">Name</label>
-                  <input type="text" id="name" required autocomplete="name" />
-                </div>
-                <div class="form-group full-width">
-                  <label for="billing">Billing Address</label>
-                  <textarea id="billing" autocomplete="street-address"></textarea>
-                </div>
-                <div class="form-group full-width">
-                  <label for="isJobsiteDifferent" style="display: flex; align-items: center; font-weight: normal; margin-bottom: 0;">
-                    <input type="checkbox" id="isJobsiteDifferent" style="margin-right: 0.5rem;">
-                    Jobsite address is different from billing
-                  </label>
-                </div>
-                <div id="jobsite-group" class="form-group full-width" style="display: none;">
-                  <label for="jobsite" style="font-weight: 600;">Jobsite Address</label>
-                  <textarea id="jobsite"></textarea>
-                </div>
-                <div id="location-visuals-container" class="full-width" style="display:none;">
-                    <div class="location-tabs">
-                        <button type="button" class="location-tab-btn active" data-view="map">Map</button>
-                        <button type="button" class="location-tab-btn" data-view="streetview">Street View</button>
-                    </div>
-                    <div class="location-content">
-                        <iframe id="mapView" loading="lazy" allowfullscreen></iframe>
-                        <img id="streetViewImg" src="" alt="Google Street View of the address" style="display:none;">
-                    </div>
-                </div>
-                <div class="form-group full-width">
-                    <label for="directions">Directions</label>
-                    <input type="text" id="directions" />
-                </div>
-                <div class="form-group">
-                  <label for="phone">Phone</label>
-                  <input type="tel" id="phone" inputmode="tel" required placeholder="(XXX) XXX-XXXX" />
-                </div>
-                <div class="form-group">
-                  <label for="email">Email</label>
-                  <input type="email" id="email" autocomplete="email" />
-                </div>
-                <div class="form-group full-width">
-                  <label for="availability">Availability</label>
-                  <input type="text" id="availability" />
-                </div>
-                <div class="form-group full-width">
-                  <label for="request">Work Requested</label>
-                  <textarea id="request" rows="5"></textarea>
-                </div>
-            </div>
-          </div>
-          <div class="tab-panel" data-tab-content="equipment">
-             <div class="doc-id-display full-width"></div>
-             <div class="equipment-sub-nav-container full-width">
-                <div class="equipment-sub-nav">
-                </div>
-                <button type="button" id="add-door-btn" title="Add Door">+</button>
-             </div>
-             <div id="equipment-panels-container" class="full-width">
-             </div>
-          </div>
-          <div class="tab-panel" data-tab-content="payment">
-              <div class="doc-id-display full-width"></div>
-              <h3>Payment & Warranty</h3>
-              <div class="form-group full-width">
-                <label for="poType">Method / Authorization</label>
-                <select id="poType">
-                    <option value="">Select One</option>
-                    <option value="PO Number">PO Number</option>
-                    <option value="Verbal PO">Verbal PO</option>
-                    <option value="CC on File">CC on File</option>
-                    <option value="COD">COD</option>
-                    <option value="Warranty">Warranty</option>
-                </select>
-              </div>
-              <div id="poNumberGroup" class="form-group full-width" style="display: none;">
-                  <label for="poNumberInput">PO Number</label>
-                  <input type="text" id="poNumberInput" />
-              </div>
-              <div id="verbalPoGroup" class="form-group full-width" style="display: none;">
-                  <label for="verbalPoInput">Verbal PO</label>
-                  <input type="text" id="verbalPoInput" placeholder="First and Last of person approving" />
-              </div>
-              <fieldset id="warrantyGroup" class="full-width" style="display: none;">
-                  <legend>Warranty Info</legend>
-                  <div class="form-group">
-                    <label for="installer">Installer</label>
-                    <input type="text" id="installer" />
-                  </div>
-                  <div id="installDateGroup" class="form-group">
-                    <label for="installDate">Install Date</label>
-                    <input type="date" id="installDate" />
-                  </div>
-                   <div class="form-group">
-                    <label for="warrantyTsNumber">Original TS Number</label>
-                    <input type="text" id="warrantyTsNumber" />
-                  </div>
-              </fieldset>
-              <div class="form-group full-width">
-                <label for="quotedAmount">Quoted</label>
-                <input type="text" id="quotedAmount" />
-              </div>
-              <fieldset id="cc-info-group" class="full-width" style="margin-top: 1.5rem; display: none;">
-                <legend>Payment Information (Not Saved)</legend>
-                 <div class="form-group"><label for="paymentAccountName">Account Name</label><input type="text" id="paymentAccountName" autocomplete="cc-name" /></div>
-                 <div class="form-group"><label for="paymentAccountNumber">Account Number</label><input type="text" id="paymentAccountNumber" autocomplete="off" /></div>
-                 <div class="form-group"><label for="paymentExpDate">Expiration Date</label><input type="text" id="paymentExpDate" placeholder="MM/YY" autocomplete="cc-exp" pattern="(0[1-9]|1[0-2])\/\d{2}" /></div>
-                 <div class="form-group"><label for="paymentSecurityCode">Security Code</label><input type="text" id="paymentSecurityCode" autocomplete="off" pattern="\d{3,4}" maxlength="4" /></div>
-                 <div class="form-group full-width"><label for="billingChanges">Billing Address Changes</label><textarea id="billingChanges"></textarea></div>
-                 <div class="form-group"><label for="depositAmount">Deposit Amount</label><input type="text" id="depositAmount" /></div>
-                 <div class="form-group"><label for="remainingBalance">Remaining Balance</label><input type="text" id="remainingBalance" /></div>
-                 <div class="form-group"><label for="tsNumber">TS Number</label><input type="text" id="tsNumber" /></div>
-                 <div class="form-group"><label for="receiptMethod">Send Receipt Via</label><select id="receiptMethod"><option value="">Select One</option><option value="EMAIL">Email</option><option value="USPS">USPS</option></select></div>
-                 <div class="form-group">
-                   <button type="button" id="paymentPdfBtn">Generate Payment PDF</button>
-                 </div>
-              </fieldset>
-          </div>
-          <div class="tab-panel" data-tab-content="quote">
-            <div class="doc-id-display full-width"></div>
-            <h3>Quote Details</h3>
-            <div class="form-group full-width">
-              <label for="siteSpecs">Site Specs</label>
-              <textarea id="siteSpecs" rows="5"></textarea>
-            </div>
-            <div class="form-group full-width">
-              <label for="wePropose">We Propose</label>
-              <textarea id="wePropose" rows="10"></textarea>
-            </div>
-            <div class="form-group full-width">
-              <label for="leadTime">Lead Time</label>
-              <input type="text" id="leadTime" />
-            </div>
-          </div>
-           <div class="tab-panel" data-tab-content="email">
-            <div class="doc-id-display full-width"></div>
-            <h3>Email Customer</h3>
-             <div style="display: flex; gap: 0.5rem; flex-wrap: wrap;">
-               <button type="button" id="emailQuoteBtn">Send Quote</button>
-               <button type="button" id="emailInvoiceBtn">Send Invoice</button>
-               <button type="button" id="emailDepositBtn">Send Deposit Receipt</button>
-            </div>
-          </div>
-          <pre id="output" class="full-width" style="white-space:pre-wrap;margin-top:1rem; min-height: 100px; display: none;"></pre>
-        </form>
-      </div>
-    </div>
-    
-    <div id="document-view" class="document-view">
-        <div id="docview-placeholder">No job loaded.</div>
-        <div id="docview-content" style="display: none;">
-            <div class="docview-header">
-                <h3 id="docview-name"></h3>
-                <span id="docview-docId"></span>
-            </div>
-            <div class="docview-section">
-                <h4>Contact</h4>
-                <div class="docview-item">
-                    <label>Phone</label>
-                    <p id="docview-phone"></p>
-                </div>
-                <div class="docview-item">
-                    <label>Email</label>
-                    <p id="docview-email"></p>
-                </div>
-            </div>
-            <div class="docview-section">
-                <h4>Address</h4>
-                <p id="docview-jobsite"></p>
-            </div>
-            <div class="docview-section">
-                <h4>Work Requested</h4>
-                <p id="docview-request"></p>
-            </div>
-            <div class="docview-section">
-                <h4>Equipment</h4>
-                <div id="docview-equipment"></div>
-            </div>
-        </div>
-    </div>
-  </div>
-  <div id="toast-container"></div>
-    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
-    <script src="https://apis.google.com/js/api.js"></script>
-    <script src="https://unpkg.com/jspdf@latest/dist/jspdf.umd.min.js"></script>
-    <script src="https://unpkg.com/jspdf-autotable@latest/dist/jspdf.plugin.autotable.js"></script>
-    
-    <script type="module" src="js/main.js"></script>
 </body>
 </html>
